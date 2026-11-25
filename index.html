@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Suivi des activités du service</title>
+<style>
+:root{color-scheme:light;--bg:#f4f6fa;--card:#fff;--tx:#1b2433;--mu:#667085;--bd:#d9dee8;--ac:#1f3864;--act:#fff;--ok:#1e7a46;--okb:#dcf3e5;--en:#9a5b00;--enb:#fff0cf;--lt:#b42318;--ltb:#fde4e1;--hv:#eef2fa}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#12161f;--card:#1b2130;--tx:#e8ecf4;--mu:#98a2b6;--bd:#313a4d;--ac:#8fb0ff;--act:#10172a;--ok:#6fd49a;--okb:#16372a;--en:#f0b85a;--enb:#3d2f10;--lt:#ff9a8f;--ltb:#4a1d1a;--hv:#232b3d}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#12161f;--card:#1b2130;--tx:#e8ecf4;--mu:#98a2b6;--bd:#313a4d;--ac:#8fb0ff;--act:#10172a;--ok:#6fd49a;--okb:#16372a;--en:#f0b85a;--enb:#3d2f10;--lt:#ff9a8f;--ltb:#4a1d1a;--hv:#232b3d}
+*{box-sizing:border-box}
+:root{box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--tx);font:14px/1.45 Arial,Helvetica,sans-serif}
+header{padding:16px 20px 0;max-width:1200px;margin:0 auto}
+h1{margin:0;font-size:20px;color:var(--ac)}
+.sub{color:var(--mu);font-size:12px;margin-top:2px}
+nav{display:flex;gap:4px;overflow-x:auto;padding:12px 20px 0;max-width:1200px;margin:0 auto;border-bottom:1px solid var(--bd)}
+nav button{background:none;border:0;border-bottom:3px solid transparent;padding:8px 12px;font:inherit;color:var(--mu);cursor:pointer;white-space:nowrap}
+nav button.on{color:var(--ac);border-color:var(--ac);font-weight:700}
+main{max-width:1200px;margin:0 auto;padding:16px 20px 40px}
+.bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:12px}
+.bar .hint{flex:1;color:var(--mu);font-size:12px;min-width:200px}
+input,select,textarea{font:inherit;color:var(--tx);background:var(--card);border:1px solid var(--bd);border-radius:6px;padding:7px 9px;width:100%}
+.bar input,.bar select{width:auto}
+button.pri{background:var(--ac);color:var(--act);border:0;border-radius:6px;padding:8px 14px;font:inherit;font-weight:700;cursor:pointer}
+button.sec{background:var(--card);color:var(--tx);border:1px solid var(--bd);border-radius:6px;padding:8px 14px;font:inherit;cursor:pointer}
+button.dng{background:var(--card);color:var(--lt);border:1px solid var(--lt);border-radius:6px;padding:8px 14px;font:inherit;cursor:pointer}
+.wrap{overflow-x:auto;background:var(--card);border:1px solid var(--bd);border-radius:8px}
+table{border-collapse:collapse;width:100%;min-width:640px}
+th{background:var(--ac);color:var(--act);text-align:left;font-size:12px;padding:9px 10px;white-space:nowrap}
+td{padding:9px 10px;border-top:1px solid var(--bd);vertical-align:top;max-width:280px;overflow-wrap:anywhere}
+tbody tr{cursor:pointer}tbody tr:hover{background:var(--hv)}
+.tag{display:inline-block;border-radius:10px;padding:1px 9px;font-size:12px;font-weight:700;white-space:nowrap}
+.t-Terminé{background:var(--okb);color:var(--ok)}.t-En{background:var(--enb);color:var(--en)}.t-late{background:var(--ltb);color:var(--lt);margin-left:4px}
+.cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px;margin-bottom:18px}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:8px;padding:14px;cursor:pointer}
+.card b{display:block;color:var(--ac);margin-bottom:6px}
+.card .n{font-size:28px;font-weight:700}.card .m{color:var(--mu);font-size:12px}
+h2{font-size:15px;margin:18px 0 8px;color:var(--ac)}
+.empty{padding:28px;text-align:center;color:var(--mu)}
+dialog{border:1px solid var(--bd);border-radius:10px;background:var(--card);color:var(--tx);width:min(640px,94vw);padding:0}
+dialog::backdrop{background:rgba(0,0,0,.45)}
+.mh{padding:14px 18px;border-bottom:1px solid var(--bd);font-weight:700;color:var(--ac)}
+.mb{padding:14px 18px;display:grid;grid-template-columns:1fr 1fr;gap:10px 14px;max-height:68vh;overflow:auto}
+.mb label{font-size:12px;color:var(--mu);display:block;margin-bottom:3px}.mb .f{grid-column:span 1}.mb .w{grid-column:1/-1}
+.mf{padding:12px 18px;border-top:1px solid var(--bd);display:flex;gap:8px;justify-content:flex-end}.mf .sp{flex:1}
+#login{display:none;max-width:380px;margin:40px auto;padding:0 20px}.lg{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:20px}.lg label{display:block;font-size:12px;color:var(--mu);margin:10px 0 3px}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(20px + env(safe-area-inset-bottom,0px));background:var(--lt);color:#fff;padding:9px 16px;border-radius:8px;display:none;z-index:9;max-width:90vw}
+@media (max-width:560px){.mb{grid-template-columns:1fr}.mb .f{grid-column:1/-1}}
+</style>
+</head>
+<body>
+<header style="display:flex;gap:12px;align-items:flex-start;justify-content:space-between"><div><h1>Suivi des activités du service</h1><div class="sub" id="sub">Connexion requise</div></div><button class="sec" id="out" style="display:none">Se déconnecter</button></header>
+<div id="login"><div class="lg"><b>Connexion</b><p class="sub">Accès réservé aux deux membres du service.</p><form id="lf"><label>Adresse e-mail</label><input id="em" type="email" autocomplete="username" required><label>Mot de passe</label><input id="pw" type="password" autocomplete="current-password" required><p id="lerr" style="color:var(--lt);min-height:18px;margin:8px 0"></p><button class="pri" type="submit">Se connecter</button></form></div></div>
+<nav id="nav"></nav>
+<main id="main"></main>
+<dialog id="dlg"><form method="dialog" id="frm" onsubmit="return false"><div class="mh" id="mh"></div><div class="mb" id="mb"></div><div class="mf" id="mf"></div></form></dialog>
+<datalist id="dl"></datalist>
+<div id="toast"></div>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+/* >>> À REMPLIR : copiez ici la configuration de votre application web Firebase (voir LISEZMOI.md) <<< */
+const FIREBASE_CONFIG={
+apiKey:"AIzaSyDu8njivdlUgUAk9jkaZ6GWoNXPWX4dxSw",
+authDomain:"suivi-des-taches-sr.firebaseapp.com",
+projectId:"suivi-des-taches-sr",
+storageBucket:"suivi-des-taches-sr.firebasestorage.app",
+messagingSenderId:"344958686427",
+appId:"1:344958686427:web:aa658cc6b83955a4f9a8fe"
+};
+const SEL4=["À confirmer","À faire","Oui","Non applicable"];
+const T=[
+{id:"lots",name:"Lots",main:0,done:4,show:[0,2,4,5,7,8],cols:[
+["N° lot"],["Fichier source pont bascule"],["Date de réception","d"],["Fichier traité"],["Date fichier Final créé","d"],["Nb de lignes / fournisseurs"],["Anomalies ou remarques","l"],["Responsable","r"],["Prochaine action / attente","l"],["Lien ou chemin des fichiers","l"]]},
+{id:"contrats",name:"Contrats",main:0,done:9,show:[0,2,3,6,7,8,9],cols:[
+["N° contrat"],["Lots inclus","l"],["Date demande contribution","d"],["Date calcul terminé","d"],["Fichier contribution"],["Responsable contribution","r"],["DDR Excel généré","s",SEL4],["DDR PDF généré","s",SEL4],["GeoJSON généré","s",SEL4],["Date transmission trader","d"],["Responsable transmission","r"]]},
+{id:"mensuel",name:"Mise à jour mensuelle",main:0,done:10,show:[0,1,3,6,10],cols:[
+["Mois concerné"],["Date extraction Koltiva","d"],["Date liste transmise au resp. BD","d"],["Resp. base de données","r"],["Date retour analyse + proposition","d"],["Fichier proposé","l"],["Contrôle QGIS terminé","s",["À confirmer","À faire","En cours","Validé","Non applicable"]],["Date validation conformité","d"],["Validé par","r"],["Template / fichier final"],["Date envoi Tropicore","d"]]},
+{id:"corrections",name:"Corrections",main:3,done:7,show:[0,1,2,3,7],cols:[
+["Date demande","d"],["Type de correction","s",["Polygone","Nom fournisseur","Superficie fournisseur","Autre"]],["Fournisseur / code / parcelle"],["Correction demandée","l"],["Système concerné","s",["Koltiva","PIC","Autre"]],["Destinataire","r"],["Date envoi mail","d"],["Date confirmation","d"],["Preuve / lien / remarque","l"]]},
+{id:"taches",name:"Tâches ponctuelles",main:0,done:5,due:3,show:[0,3,4,6,5],cols:[
+["Tâche"],["Description / résultat attendu","l"],["Date de demande","d"],["Échéance","d"],["Responsable","r"],["Date terminée","d"],["Priorité","s",["Urgente","Normale","Faible"]],["Demandeur / destinataire","r"],["Lien / fichiers / remarques","l"]]}
+];
+const S={tab:"dash",rows:{},flt:"all",q:"",db:null,loaded:{}};
+const $=s=>document.querySelector(s);
+const h=(t,a={},...c)=>{const e=document.createElement(t);for(const k in a){if(k==="class")e.className=a[k];else if(k.startsWith("on"))e.addEventListener(k.slice(2),a[k]);else e.setAttribute(k,a[k]);}c.flat().forEach(x=>e.append(x instanceof Node?x:document.createTextNode(x==null?"":x)));return e;};
+const fmt=v=>v&&/^\d{4}-\d\d-\d\d$/.test(v)?v.split("-").reverse().join("/"):(v||"");
+const today=()=>new Date().toISOString().slice(0,10);
+const val=(r,i)=>r.d["c"+i]||"";
+const etat=(t,r)=>val(r,t.main)?(val(r,t.done)?"Terminé":"En cours"):"";
+const late=(t,r)=>t.due!=null&&etat(t,r)==="En cours"&&val(r,t.due)&&val(r,t.due)<today();
+const tagEl=(t,r)=>{const e=etat(t,r);if(!e)return"";const s=h("span",{},h("span",{class:"tag "+(e==="Terminé"?"t-Terminé":"t-En")},e));if(late(t,r))s.append(h("span",{class:"tag t-late"},"En retard"));return s;};
+function toast(m){const e=$("#toast");e.textContent=m;e.style.display="block";clearTimeout(toast.t);toast.t=setTimeout(()=>e.style.display="none",5000);}
+function nav(){const n=$("#nav");n.replaceChildren(h("button",{class:S.tab==="dash"?"on":"",onclick:()=>go("dash")},"Tableau de bord"),...T.map(t=>h("button",{class:S.tab===t.id?"on":"",onclick:()=>go(t.id)},t.name)));}
+function go(t){S.tab=t;S.flt="all";S.q="";render();window.scrollTo(0,0);}
+function render(){nav();const m=$("#main");m.replaceChildren();if(S.tab==="dash")dash(m);else tableView(m,T.find(t=>t.id===S.tab));
+const names=new Set();T.forEach(t=>t.cols.forEach((c,i)=>{if(c[1]==="r")(S.rows[t.id]||[]).forEach(r=>{const v=val(r,i);if(v)names.add(v);});}));$("#dl").replaceChildren(...[...names].sort().map(n=>h("option",{value:n})));}
+const rowsOf=t=>(S.rows[t.id]||[]).filter(r=>val(r,t.main));
+function dash(m){
+m.append(h("div",{class:"cards"},T.map(t=>{const rs=rowsOf(t),ec=rs.filter(r=>etat(t,r)==="En cours").length,tm=rs.filter(r=>etat(t,r)==="Terminé").length;
+return h("div",{class:"card",onclick:()=>go(t.id)},h("b",{},t.name),h("span",{class:"n"},ec)," ",h("span",{class:"m"},"en cours"),h("div",{class:"m"},tm+" terminé(s) · "+rs.length+" saisi(s)"));})));
+m.append(h("h2",{},"Éléments en cours"));
+const items=[];T.forEach(t=>rowsOf(t).filter(r=>etat(t,r)==="En cours").forEach(r=>items.push([t,r])));
+if(!items.length){m.append(h("div",{class:"wrap empty"},S.loaded.n>=T.length?"Aucune activité en cours.":"Chargement…"));return;}
+m.append(h("div",{class:"wrap"},h("table",{},h("thead",{},h("tr",{},["Type","Élément","Responsable / échéance","État"].map(x=>h("th",{},x)))),
+h("tbody",{},items.map(([t,r])=>{const rc=t.cols.findIndex(c=>c[1]==="r");const extra=[rc>=0?val(r,rc):"",t.due!=null&&val(r,t.due)?"échéance "+fmt(val(r,t.due)):""].filter(Boolean).join(" · ");
+return h("tr",{onclick:()=>edit(t,r)},h("td",{},t.name),h("td",{},val(r,t.main)),h("td",{},extra),h("td",{},tagEl(t,r)));})))));}
+function tableView(m,t){
+const all=rowsOf(t);
+m.append(h("div",{class:"bar"},
+h("input",{type:"search",placeholder:"Rechercher…",value:S.q,oninput:e=>{S.q=e.target.value;body();}}),
+h("select",{onchange:e=>{S.flt=e.target.value;body();}},[["all","Tous les états"],["En cours","En cours"],["Terminé","Terminés"]].map(([v,l])=>h("option",{value:v,selected:S.flt===v?"":null},l))),
+h("span",{class:"hint"},"Le statut est calculé : « Terminé » dès que « "+t.cols[t.done][0]+" » est renseigné."),
+h("button",{class:"pri",onclick:()=>edit(t,null)},"+ Ajouter")));
+const box=h("div",{});m.append(box);
+function body(){const q=S.q.toLowerCase();
+const rs=all.filter(r=>(S.flt==="all"||etat(t,r)===S.flt)&&(!q||t.cols.some((c,i)=>(val(r,i)+" "+fmt(val(r,i))).toLowerCase().includes(q))));
+box.replaceChildren(rs.length?h("div",{class:"wrap"},h("table",{},h("thead",{},h("tr",{},[...t.show.map(i=>t.cols[i][0]),"État"].map(x=>h("th",{},x)))),
+h("tbody",{},rs.map(r=>h("tr",{onclick:()=>edit(t,r)},...t.show.map(i=>h("td",{},fmt(val(r,i)))),h("td",{},tagEl(t,r))))))):h("div",{class:"wrap empty"},all.length?"Aucun résultat.":(S.loaded[t.id]?"Aucune ligne. Cliquez sur « + Ajouter ».":"Chargement…")));}
+body();}
+function edit(t,r){
+const f=$("#frm");$("#mh").textContent=(r?"Modifier":"Nouvelle ligne")+" — "+t.name;
+const mb=$("#mb");mb.replaceChildren();const inp={};
+t.cols.forEach((c,i)=>{const k=c[1];let e;
+if(k==="d")e=h("input",{type:"date"});else if(k==="l")e=h("textarea",{rows:"2"});
+else if(k==="s")e=h("select",{},h("option",{value:""},"—"),c[2].map(o=>h("option",{value:o},o)));
+else{e=h("input",{type:"text"});if(k==="r")e.setAttribute("list","dl");}
+if(r)e.value=val(r,i);inp[i]=e;mb.append(h("div",{class:(k==="l"||i===t.main)?"w":"f"},h("label",{},c[0]+(i===t.main?" *":"")),e));});
+const mf=$("#mf");mf.replaceChildren();
+if(r)mf.append(h("button",{class:"dng",type:"button",onclick:async()=>{if(!confirm("Supprimer cette ligne pour tout le monde ?"))return;try{await S.db.collection(t.id).doc(r.id).delete();$("#dlg").close();}catch(e){toast("Suppression refusée : "+(e&&e.message||e));}}},"Supprimer"));
+mf.append(h("span",{class:"sp"}),h("button",{class:"sec",type:"button",onclick:()=>$("#dlg").close()},"Annuler"),
+h("button",{class:"pri",type:"button",onclick:async()=>{
+const d={};t.cols.forEach((c,i)=>{const v=inp[i].value.trim();if(v)d["c"+i]=v;});
+if(!d["c"+t.main]){toast("Le champ « "+t.cols[t.main][0]+" » est obligatoire.");return;}
+d._t=r?(r.d._t||Date.now()):Date.now();
+if(!S.db){toast("Base partagée indisponible.");return;}
+try{await S.db.collection(t.id).doc(r?r.id:"r"+Date.now().toString(36)+Math.random().toString(36).slice(2,5)).set(d);$("#dlg").close();}
+catch(e){toast("Enregistrement refusé : vérifiez la connexion et que votre e-mail figure dans les règles Firestore. ("+(e&&e.code||"erreur")+")");}}},"Enregistrer"));
+$("#dlg").showModal();}
+function start(db){
+if(!db){$("#sub").textContent="Base de données partagée indisponible dans cette vue.";return;}
+S.db=db;S.loaded.n=0;let first=true;
+const timer=setTimeout(()=>{$("#sub").textContent="Les données partagées ne répondent pas encore…";},10000);
+T.forEach(t=>db.collection(t.id).onSnapshot(s=>{
+S.rows[t.id]=s.docs.map(d=>({id:d.id,d:d.data()||{}})).sort((a,b)=>(a.d._t||0)-(b.d._t||0));
+if(!S.loaded[t.id]){S.loaded[t.id]=true;S.loaded.n++;}
+if(!s.metadata.fromCache){clearTimeout(timer);$("#sub").textContent="Classeur partagé — les modifications de chacun apparaissent en direct.";}
+render();},e=>{$("#sub").textContent="Erreur de lecture des données ("+(e&&e.code||"?")+").";}));}
+const cfgOk=FIREBASE_CONFIG.apiKey&&!String(FIREBASE_CONFIG.apiKey).startsWith("COLLER");
+function showLogin(){$("#login").style.display="block";$("#nav").style.display="none";$("#main").style.display="none";$("#out").style.display="none";$("#sub").textContent="Connexion requise";}
+$("#nav").style.display="none";$("#main").style.display="none";
+if(!cfgOk){$("#sub").textContent="Configuration Firebase manquante : voir LISEZMOI.md";}
+else{
+firebase.initializeApp(FIREBASE_CONFIG);
+const auth=firebase.auth();
+$("#lf").addEventListener("submit",e=>{e.preventDefault();$("#lerr").textContent="";auth.signInWithEmailAndPassword($("#em").value.trim(),$("#pw").value).catch(()=>{$("#lerr").textContent="Connexion refusée : e-mail ou mot de passe incorrect.";});});
+$("#out").addEventListener("click",()=>auth.signOut().then(()=>location.reload()));
+let started=false;
+auth.onAuthStateChanged(u=>{
+if(u){$("#login").style.display="none";$("#nav").style.display="";$("#main").style.display="";$("#out").style.display="";$("#sub").textContent="Chargement des données partagées…";
+if(!started){started=true;render();start(firebase.firestore());}}
+else showLogin();});
+}
+</script>
+</body>
+</html>
